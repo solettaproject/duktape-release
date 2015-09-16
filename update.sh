@@ -41,6 +41,7 @@ fi
 
 VERSION=$1
 TARBALL="duktape-$VERSION.tar.xz"
+EXTRACTED_DIR="extracted"
 
 if [ -d "$GIT_DIR" ]
 then
@@ -51,7 +52,24 @@ else
     git clone $GIT_URL $GIT_DIR || exit 1
 fi
 
-tar xf $GIT_DIR/$TARBALL -C src/ --strip-components=2 duktape-$VERSION/src/duktape.[ch] || exit 1
+
+if [ -d "$EXTRACTED_DIR" ]
+then
+    rm -r $EXTRACTED_DIR || exit 1
+fi
+
+mkdir $EXTRACTED_DIR || exit 1
+tar xf $GIT_DIR/$TARBALL -C $EXTRACTED_DIR || exit 1
+
+cp $EXTRACTED_DIR/*/src/duktape.c src/ || exit 1
+
+#remove lines that prevents us to generate sane debug packaging for
+#the js module
+sed -i -e 's/^\#line.*$//g' src/duktape.c || exit 1
+
+cp $EXTRACTED_DIR/*/src/duktape.h src/ || exit 1
+
+rm -r $EXTRACTED_DIR || exit 1
 
 git add -u || exit 1
 git commit -m "Update to duktape $VERSION" || exit 1
