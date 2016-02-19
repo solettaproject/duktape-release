@@ -51,7 +51,7 @@ else
     git clone $GIT_URL $GIT_DIR || exit 1
 fi
 
-tar xf $GIT_DIR/$TARBALL -C src/ --strip-components=2 duktape-$VERSION/src/duktape.[ch] || exit 1
+tar xf $GIT_DIR/$TARBALL -C src/ --strip-components=2 duktape-$VERSION/src-noline/duktape.[ch] duktape-$VERSION/src-noline/duk_config.h || exit 1
 
 git add -u || exit 1
 git commit -m "Update to duktape $VERSION" || exit 1
